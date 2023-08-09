@@ -100,6 +100,13 @@ class Powerwall:
         
         return MeterDetail(MeterType.SITE, meter)    
 
+    def get_meters_solar(self) -> MeterDetail:
+        meter = assert_attribute(
+            self._api.get_meters_solar()[0], "Cached_readings", "meters/solar"
+            )
+        
+        return MeterDetail(MeterType.SOLAR, meter)    
+
     def get_grid_status(self) -> GridStatus:
         """Returns the current grid status."""
         status = assert_attribute(

@@ -25,6 +25,7 @@ from tests.unit import (
     GRID_STATUS_RESPONSE,
     METERS_AGGREGATES_RESPONSE,
     METERS_SITE_RESPONSE,
+    METERS_SOLAR_RESPONSE,
     OPERATION_RESPONSE,
     POWERWALLS_RESPONSE,
     SITE_INFO_RESPONSE,
@@ -124,6 +125,25 @@ class TestPowerWall(unittest.TestCase):
         self.assertEqual(meters_site.reactive_power_a, -515)
         self.assertEqual(meters_site.reactive_power_b, -289)
         self.assertEqual(meters_site.reactive_power_c, -268)
+        
+    @responses.activate
+    def test_get_meters_solar(self):
+        add(
+            Response(responses.GET, url=f"{ENDPOINT}meters/solar", json=METERS_SOLAR_RESPONSE)
+        )
+        meters_solar = self.powerwall.get_meters_solar()
+        self.assertEqual(meters_solar.i_a_current, 0.534)
+        self.assertEqual(meters_solar.i_b_current, 0.398)
+        self.assertEqual(meters_solar.i_c_current, 0.41250000000000006)
+        self.assertEqual(meters_solar.v_l1n, 234.6)
+        self.assertEqual(meters_solar.v_l2n, 231.1)
+        self.assertEqual(meters_solar.v_l3n, 236.73000000000003)
+        self.assertEqual(meters_solar.real_power_a,-1)
+#Missing??        self.assertEqual(meters_solar.real_power_b, -1)
+        self.assertEqual(meters_solar.real_power_c, -1)
+        self.assertEqual(meters_solar.reactive_power_a, 124)
+        self.assertEqual(meters_solar.reactive_power_b, 90)
+        self.assertEqual(meters_solar.reactive_power_c, 95)
         
     @responses.activate
     def test_get_grid_status(self):
