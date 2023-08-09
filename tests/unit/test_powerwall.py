@@ -24,6 +24,7 @@ from tests.unit import (
     ENDPOINT,
     GRID_STATUS_RESPONSE,
     METERS_AGGREGATES_RESPONSE,
+    METERS_SITE_RESPONSE,
     OPERATION_RESPONSE,
     POWERWALLS_RESPONSE,
     SITE_INFO_RESPONSE,
@@ -105,6 +106,25 @@ class TestPowerWall(unittest.TestCase):
         self.assertEqual(meters.get_meter(MeterType.LOAD).is_drawing_from(), False)
         self.assertEqual(meters.get_meter(MeterType.LOAD).is_active(), True)
 
+    @responses.activate
+    def test_get_meters_site(self):
+        add(
+            Response(responses.GET, url=f"{ENDPOINT}meters/site", json=METERS_SITE_RESPONSE)
+        )
+        meters_site = self.powerwall.get_meters_site()
+        self.assertEqual(meters_site.i_a_current, 2.617)
+        self.assertEqual(meters_site.i_b_current, 1.2750000000000002)
+        self.assertEqual(meters_site.i_c_current, 1.2745)
+        self.assertEqual(meters_site.v_l1n, 234.16)
+        self.assertEqual(meters_site.v_l2n, 232.36)
+        self.assertEqual(meters_site.v_l3n, 236.01)
+        self.assertEqual(meters_site.real_power_a,-111)
+        self.assertEqual(meters_site.real_power_b, 32)
+        self.assertEqual(meters_site.real_power_c, 124)
+        self.assertEqual(meters_site.reactive_power_a, -515)
+        self.assertEqual(meters_site.reactive_power_b, -289)
+        self.assertEqual(meters_site.reactive_power_c, -268)
+        
     @responses.activate
     def test_get_grid_status(self):
         add(

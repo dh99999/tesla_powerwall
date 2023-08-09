@@ -22,6 +22,7 @@ from .responses import (
     Battery,
     LoginResponse,
     Meter,
+    MeterDetail,
     MetersAggregates,
     PowerwallStatus,
     SiteInfo,
@@ -91,6 +92,13 @@ class Powerwall:
 
     def get_meters(self) -> MetersAggregates:
         return MetersAggregates(self._api.get_meters_aggregates())
+
+    def get_meters_site(self) -> MeterDetail:
+        meter = assert_attribute(
+            self._api.get_meters_site()[0], "Cached_readings", "meters/site"
+            )
+        
+        return MeterDetail(MeterType.SITE, meter)    
 
     def get_grid_status(self) -> GridStatus:
         """Returns the current grid status."""

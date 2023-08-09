@@ -98,6 +98,74 @@ class Meter(Response):
             return self.get_power(precision) < 0
 
 
+class MeterDetail(Meter):
+    """
+    Attributes - attributes from Meter() plus: 
+    - i_a_current
+	- i_b_current
+    - i_c_current
+    - v_l1n
+	- v_l2n
+	- v_l3n
+	- real_power_a
+	- real_power_b
+	- real_power_c
+	- reactive_power_a
+	- reactive_power_b
+	- reactive_power_c
+    """
+
+    def __init__(self, meterType: MeterType, response) -> None:
+        super().__init__(meterType, response)
+
+    @property
+    def i_a_current(self) -> float:
+        return self.assert_attribute("i_a_current")
+
+    @property
+    def i_b_current(self) -> float:
+        return self.assert_attribute("i_b_current")
+
+    @property
+    def i_c_current(self) -> float:
+        return self.assert_attribute("i_c_current")
+
+    @property
+    def v_l1n(self) -> float:
+        return self.assert_attribute("v_l1n")
+
+    @property
+    def v_l2n(self) -> float:
+        return self.assert_attribute("v_l2n")
+
+    @property
+    def v_l3n(self) -> float:
+        return self.assert_attribute("v_l3n")
+
+    @property
+    def real_power_a(self) -> float:
+        return self.assert_attribute("real_power_a")
+
+    @property
+    def real_power_b(self) -> float:
+        return self.assert_attribute("real_power_b")
+
+    @property
+    def real_power_c(self) -> float:
+        return self.assert_attribute("real_power_c")
+
+    @property
+    def reactive_power_a(self) -> float:
+        return self.assert_attribute("reactive_power_a")
+
+    @property
+    def reactive_power_b(self) -> float:
+        return self.assert_attribute("reactive_power_b")
+
+    @property
+    def reactive_power_c(self) -> float:
+        return self.assert_attribute("reactive_power_c")
+
 class MetersAggregates(Response):
     def __init__(self, response) -> str:
         super().__init__(response)

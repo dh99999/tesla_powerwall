@@ -225,6 +225,9 @@ class API(object):
     def get_meters(self) -> list:
         return self.get("meters")
 
+    def get_meters_site(self) -> List[dict]:
+        return self.get("meters/site")
+
     def get_installer(self) -> dict:
         return self.get("installer")
 
