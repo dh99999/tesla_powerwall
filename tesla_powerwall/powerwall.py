@@ -22,7 +22,7 @@ from .responses import (
     Battery,
     LoginResponse,
     Meter,
-    MeterDetail,
+    MeterDetails,
     MetersAggregates,
     PowerwallStatus,
     SiteInfo,
@@ -93,19 +93,19 @@ class Powerwall:
     def get_meters(self) -> MetersAggregates:
         return MetersAggregates(self._api.get_meters_aggregates())
 
-    def get_meters_site(self) -> MeterDetail:
-        meter = assert_attribute(
-            self._api.get_meters_site()[0], "Cached_readings", "meters/site"
-            )
-        
-        return MeterDetail(MeterType.SITE, meter)    
+    def get_meter_site(self):
+        meter_response = self._api.get_meters_site()
+        if meter_response is None or len(meter_response) == 0:
+            raise ApiError("The powerwall returned no values for the site meter")
 
-    def get_meters_solar(self) -> MeterDetail:
-        meter = assert_attribute(
-            self._api.get_meters_solar()[0], "Cached_readings", "meters/solar"
-            )
-        
-        return MeterDetail(MeterType.SOLAR, meter)    
+        return MeterDetails(meter_response[0])
+
+    def get_meter_solar(self):
+        meter_response = self._api.get_meters_solar()
+        if meter_response is None or len(meter_response) == 0:
+            raise ApiError("The powerwall returned no values for the solar meter")
+
+        return MeterDetails(meter_response[0])
 
     def get_grid_status(self) -> GridStatus:
         """Returns the current grid status."""
