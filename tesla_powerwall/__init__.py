@@ -27,6 +27,7 @@ from .responses import (
     Battery,
     LoginResponse,
     Meter,
+    MeterDetails,
     MetersAggregates,
     PowerwallStatus,
     SiteInfo,

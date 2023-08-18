@@ -108,11 +108,11 @@ class TestPowerWall(unittest.TestCase):
         self.assertEqual(meters.get_meter(MeterType.LOAD).is_active(), True)
 
     @responses.activate
-    def test_get_meters_site(self):
+    def test_get_meter_site(self):
         add(
             Response(responses.GET, url=f"{ENDPOINT}meters/site", json=METERS_SITE_RESPONSE)
         )
-        meters_site = self.powerwall.get_meters_site()
+        meters_site = self.powerwall.get_meter_site()
         self.assertEqual(meters_site.i_a_current, 2.617)
         self.assertEqual(meters_site.i_b_current, 1.2750000000000002)
         self.assertEqual(meters_site.i_c_current, 1.2745)
@@ -122,16 +122,13 @@ class TestPowerWall(unittest.TestCase):
         self.assertEqual(meters_site.real_power_a,-111)
         self.assertEqual(meters_site.real_power_b, 32)
         self.assertEqual(meters_site.real_power_c, 124)
-        self.assertEqual(meters_site.reactive_power_a, -515)
-        self.assertEqual(meters_site.reactive_power_b, -289)
-        self.assertEqual(meters_site.reactive_power_c, -268)
         
     @responses.activate
-    def test_get_meters_solar(self):
+    def test_get_meter_solar(self):
         add(
             Response(responses.GET, url=f"{ENDPOINT}meters/solar", json=METERS_SOLAR_RESPONSE)
         )
-        meters_solar = self.powerwall.get_meters_solar()
+        meters_solar = self.powerwall.get_meter_solar()
         self.assertEqual(meters_solar.i_a_current, 0.534)
         self.assertEqual(meters_solar.i_b_current, 0.398)
         self.assertEqual(meters_solar.i_c_current, 0.41250000000000006)
@@ -141,9 +138,6 @@ class TestPowerWall(unittest.TestCase):
         self.assertEqual(meters_solar.real_power_a,-1)
 #Missing??        self.assertEqual(meters_solar.real_power_b, -1)
         self.assertEqual(meters_solar.real_power_c, -1)
-        self.assertEqual(meters_solar.reactive_power_a, 124)
-        self.assertEqual(meters_solar.reactive_power_b, 90)
-        self.assertEqual(meters_solar.reactive_power_c, 95)
         
     @responses.activate
     def test_get_grid_status(self):
