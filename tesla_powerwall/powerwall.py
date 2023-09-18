@@ -98,20 +98,6 @@ class Powerwall:
 
         return MeterDetailsResponse.from_dict(meter_response[0])
 
-    def get_meter_site(self):
-        meter_response = self._api.get_meters_site()
-        if meter_response is None or len(meter_response) == 0:
-            raise ApiError("The powerwall returned no values for the site meter")
-
-        return MeterDetails(meter_response[0])
-
-    def get_meter_solar(self):
-        meter_response = self._api.get_meters_solar()
-        if meter_response is None or len(meter_response) == 0:
-            raise ApiError("The powerwall returned no values for the solar meter")
-
-        return MeterDetails(meter_response[0])
-
     def get_grid_status(self) -> GridStatus:
         """Returns the current grid status."""
         status = assert_attribute(

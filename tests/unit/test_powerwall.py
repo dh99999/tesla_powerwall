@@ -30,8 +30,6 @@ from tests.unit import (
     METER_SITE_RESPONSE,
     METER_SOLAR_RESPONSE,
     METERS_AGGREGATES_RESPONSE,
-    METERS_SITE_RESPONSE,
-    METERS_SOLAR_RESPONSE,
     OPERATION_RESPONSE,
     POWERWALLS_RESPONSE,
     SITE_INFO_RESPONSE,
@@ -162,38 +160,6 @@ class TestPowerWall(unittest.TestCase):
         self.assertEqual(meters.get_meter(MeterType.LOAD).is_drawing_from(), False)
         self.assertEqual(meters.get_meter(MeterType.LOAD).is_active(), True)
 
-    @responses.activate
-    def test_get_meter_site(self):
-        add(
-            Response(responses.GET, url=f"{ENDPOINT}meters/site", json=METERS_SITE_RESPONSE)
-        )
-        meters_site = self.powerwall.get_meter_site()
-        self.assertEqual(meters_site.i_a_current, 2.617)
-        self.assertEqual(meters_site.i_b_current, 1.2750000000000002)
-        self.assertEqual(meters_site.i_c_current, 1.2745)
-        self.assertEqual(meters_site.v_l1n, 234.16)
-        self.assertEqual(meters_site.v_l2n, 232.36)
-        self.assertEqual(meters_site.v_l3n, 236.01)
-        self.assertEqual(meters_site.real_power_a,-111)
-        self.assertEqual(meters_site.real_power_b, 32)
-        self.assertEqual(meters_site.real_power_c, 124)
-        
-    @responses.activate
-    def test_get_meter_solar(self):
-        add(
-            Response(responses.GET, url=f"{ENDPOINT}meters/solar", json=METERS_SOLAR_RESPONSE)
-        )
-        meters_solar = self.powerwall.get_meter_solar()
-        self.assertEqual(meters_solar.i_a_current, 0.534)
-        self.assertEqual(meters_solar.i_b_current, 0.398)
-        self.assertEqual(meters_solar.i_c_current, 0.41250000000000006)
-        self.assertEqual(meters_solar.v_l1n, 234.6)
-        self.assertEqual(meters_solar.v_l2n, 231.1)
-        self.assertEqual(meters_solar.v_l3n, 236.73000000000003)
-        self.assertEqual(meters_solar.real_power_a,-1)
-#Missing??        self.assertEqual(meters_solar.real_power_b, -1)
-        self.assertEqual(meters_solar.real_power_c, -1)
-        
     @responses.activate
     def test_get_grid_status(self):
         add(

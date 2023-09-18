@@ -1,5 +1,6 @@
 import os
-from tesla_powerwall import Powerwall, Meter
+
+from tesla_powerwall import MeterResponse, Powerwall
 
 
 def getenv(var):
@@ -9,34 +10,16 @@ def getenv(var):
     return val
 
 
-def print_meter_row(meter_data: Meter):
+def print_meter_row(meter_data: MeterResponse):
     print(
-        "{:>8} {:>8} {:>17} {:>17} {!r:>8} {!r:>12} {!r:>12}".format(
-       
+        "{:>8} {:>8} {:>17} {:>17} {!r:>8} {!r:>17} {!r:>17}".format(
             meter_data.meter.value,
-            meter_data.get_power(3),
+            meter_data.get_power(),
             meter_data.get_energy_exported(),
             meter_data.get_energy_imported(),
             meter_data.is_active(),
             meter_data.is_drawing_from(),
-            meter_data.is_sending_to()
-        )
-    )
-
-def print_meter_detail_row(meter_type: MeterType, meter_data: MeterDetails):
-    print(
-        "{:>8} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12}".format(
-       
-            meter_type.value,
-            round(meter_data.i_a_current, 2),
-            round(meter_data.i_b_current, 2),
-            round(meter_data.i_c_current, 2),
-            round(meter_data.real_power_a, 0),
-            round(meter_data.real_power_b, 0),
-            round(meter_data.real_power_c, 0),
-            round(meter_data.v_l1n, 2),
-            round(meter_data.v_l2n, 2),
-            round(meter_data.v_l3n, 2)
+            meter_data.is_sending_to(),
         )
     )
 
@@ -48,8 +31,6 @@ power_wall = Powerwall(ip)
 power_wall.login(password)
 site_name = power_wall.get_site_info().site_name
 meters_agg = power_wall.get_meters()
-meter_site = power_wall.get_meter_site()
-meter_solar = power_wall.get_meter_solar()
 
 print(f"{site_name}:\n")
 
@@ -72,15 +53,16 @@ for val in values:
 print("\n")
 
 print(
-    "{:>8} {:>8} {:>17} {:>17} {:>8} {:>12} {:>12}".format(
+    "{:>8} {:>8} {:>17} {:>17} {:>8} {:>17} {:>17}".format(
         "Meter",
         "Power",
         "Energy exported",
         "Energy imported",
         "Active",
         "Drawing from",
-        "Sending to"
+        "Sending to",
     )
 )
-for meter in meters_agg.meters:
-    print_meter_row(meters_agg.get_meter(meter))
+
+for meter in meters_agg.meters.values():
+    print_meter_row(meter)
