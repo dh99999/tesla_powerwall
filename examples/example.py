@@ -1,5 +1,5 @@
 import os
-from tesla_powerwall import Powerwall, Meter, MeterType, MeterDetails
+from tesla_powerwall import Powerwall, Meter
 
 
 def getenv(var):
@@ -7,6 +7,7 @@ def getenv(var):
     if val is None:
         raise ValueError(f"{var} must be set")
     return val
+
 
 def print_meter_row(meter_data: Meter):
     print(
@@ -61,7 +62,7 @@ values = [
     ("Grid Status", power_wall.get_grid_status().value),
     ("Backup Reserve (%)", round(power_wall.get_backup_reserve_percentage())),
     ("Device Type", power_wall.get_device_type().value),
-    ("Software Version", power_wall.get_version())
+    ("Software Version", power_wall.get_version()),
 ]
 
 
@@ -81,26 +82,5 @@ print(
         "Sending to"
     )
 )
-
 for meter in meters_agg.meters:
     print_meter_row(meters_agg.get_meter(meter))
-
-print("\n")
-
-print(
-    "{:>8} {:>12} {:>12} {:>12} {:>12} {:>12} {:>12} {:>12} {:>12} {:>12}".format(
-        "Meter",
-        "Current-A",
-        "Current-B",
-        "Current-C",
-        "RealPower-A",
-        "RealPower-B",
-        "RealPower-C",
-        "Voltage-1",
-        "Voltage-2",
-        "Voltage-3",
-    )
-)
-
-print_meter_detail_row(MeterType.SITE, meter_site)
-#print_meter_detail_row(MeterType.SOLAR, meter_solar)
