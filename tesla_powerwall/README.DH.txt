@@ -1,26 +1,19 @@
-Prereuisites:
+Prerequisites:
 
 - install "requests" and "responses" 
 --> pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org requests
 --> pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org responses
 
-- setup environment:
--- setup_environment.batteries
+- Running "examples" to get data from powerwall
+-- From *command prompt*
+-- setup_environment.bat
+-- from source root:
+-- python3 examples\example_dh.py
 
 - run unit tests from code:
--- should be able to "autodiscover" the tests but its not working  (likely a pythonpath issue)
---> Failed to import test module: unit.test_powerwall
-Traceback (most recent call last):
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.7_3.7.2544.0_x64__qbz5n2kfra8p0\lib\unittest\loader.py", line 436, in _find_test_path
-    module = self._get_module_from_name(name)
-  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.7_3.7.2544.0_x64__qbz5n2kfra8p0\lib\unittest\loader.py", line 377, in _get_module_from_name
-    __import__(name)
-  File "c:\src\solar\tesla_powerwall\tests\unit\test_powerwall.py", line 4, in <module>
-    import responses
-ModuleNotFoundError: No module named 'responses'
-
-
-
+-- ensure vscode is run from command prompt
+-- vscode should autodiscocer the test_api tests
+-- test_powerwall will have errors
 
 
 - run sample program to show data:

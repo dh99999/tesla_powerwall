@@ -28,15 +28,15 @@ def print_meter_detail_row(meter_type: MeterType, meter_data: MeterDetailsRespon
         "{:>8} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12}".format(
        
             meter_type.value,
-            round(meter_data.i_a_current, 2),
-            round(meter_data.i_b_current, 2),
-            round(meter_data.i_c_current, 2),
-            round(meter_data.real_power_a, 0),
-            round(meter_data.real_power_b, 0),
-            round(meter_data.real_power_c, 0),
-            round(meter_data.v_l1n, 2),
-            round(meter_data.v_l2n, 2),
-            round(meter_data.v_l3n, 2)
+            round(meter_data.i_a_current, 2) if meter_data.i_a_current is not None else 0,
+            round(meter_data.i_b_current, 2) if meter_data.i_b_current is not None else 0,
+            round(meter_data.i_c_current, 2) if meter_data.i_c_current is not None else 0,
+            round(meter_data.real_power_a, 0) if meter_data.real_power_a is not None else 0,
+            round(meter_data.real_power_b, 0) if meter_data.real_power_b is not None else 0,
+            round(meter_data.real_power_c, 0) if meter_data.real_power_c is not None else 0,
+            round(meter_data.v_l1n, 2) if meter_data.v_l1n is not None else 0,
+            round(meter_data.v_l2n, 2) if meter_data.v_l2n is not None else 0,
+            round(meter_data.v_l3n, 2) if meter_data.v_l3n is not None else 0,
         )
     )
 
