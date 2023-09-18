@@ -7,7 +7,20 @@ Prereuisites:
 -- setup_environment.batteries
 
 - run unit tests from code:
--- ??
+-- should be able to "autodiscover" the tests but its not working  (likely a pythonpath issue)
+--> Failed to import test module: unit.test_powerwall
+Traceback (most recent call last):
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.7_3.7.2544.0_x64__qbz5n2kfra8p0\lib\unittest\loader.py", line 436, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.7_3.7.2544.0_x64__qbz5n2kfra8p0\lib\unittest\loader.py", line 377, in _get_module_from_name
+    __import__(name)
+  File "c:\src\solar\tesla_powerwall\tests\unit\test_powerwall.py", line 4, in <module>
+    import responses
+ModuleNotFoundError: No module named 'responses'
+
+
+
+
 
 - run sample program to show data:
 
