@@ -1,5 +1,6 @@
 import os
-from tesla_powerwall import Powerwall, Meter, MeterType, MeterDetails
+
+from tesla_powerwall import MeterResponse, Powerwall, MeterType, MeterDetailsResponse
 
 
 def getenv(var):
@@ -8,7 +9,7 @@ def getenv(var):
         raise ValueError(f"{var} must be set")
     return val
 
-def print_meter_row(meter_data: Meter):
+def print_meter_row(meter_data: MeterResponse):
     print(
         "{:>8} {:>8} {:>17} {:>17} {!r:>8} {!r:>12} {!r:>12}".format(
        
@@ -22,7 +23,7 @@ def print_meter_row(meter_data: Meter):
         )
     )
 
-def print_meter_detail_row(meter_type: MeterType, meter_data: MeterDetails):
+def print_meter_detail_row(meter_type: MeterType, meter_data: MeterDetailsResponse):
     print(
         "{:>8} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12} {!r:>12}".format(
        
@@ -102,5 +103,5 @@ print(
     )
 )
 
-print_meter_detail_row(MeterType.SITE, meter_site)
-#print_meter_detail_row(MeterType.SOLAR, meter_solar)
+print_meter_detail_row(MeterType.SITE, meter_site.readings)
+print_meter_detail_row(MeterType.SOLAR, meter_solar.readings)
