@@ -1,7 +1,8 @@
 Prereuisites:
 
-- install "requests" PackageSerialNumber
+- install "requests" and "responses" 
 --> pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org requests
+--> pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org responses
 
 - setup environment:
 -- setup_environment.batteries
