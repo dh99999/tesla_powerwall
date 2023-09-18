@@ -1,0 +1,6 @@
+DONE - Add new MeterDetail/DetailedMeter object, inheriting from Meter 
+DONE - Move detailed properties to new meter
+- Review use of [0] - return a array of DetailedMeters
+- Make get_meters_site generic based on METER_TYPE
+- Test for load, site, solar, other meter types
+- meters_solar did not include real_power_b: weird. Check
