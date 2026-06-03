@@ -36,6 +36,7 @@ Powerwall Software versions from 1.47.0 to 1.50.1 as well as 20.40 to 22.9.2 are
     - [Gateway DIN](#gateway-din)
     - [VIN](#vin)
     - [Off-grid status](#off-grid-status-set-island-mode)
+- [Development](#development)
 
 ## Installation
 
@@ -54,12 +55,12 @@ However, if you believe there exists a solution, feel free to open an issue deta
 
 ## Usage
 
-For a basic Overview of the functionality of this library you can take a look at `examples/example.py`:
+For a basic Overview of the functionality of this library you can take a look at `examples/example.py`. You can run the example, by cloning the repo and executing in your shell:
 
 ```bash
 $ export POWERWALL_IP=<ip of your Powerwall>
 $ export POWERWALL_PASSWORD=<your password>
-$ python3 examples/example.py
+$ tox -e example
 ```
 
 ### Setup
@@ -79,14 +80,12 @@ powerwall = Powerwall(
     # Provide a requests.Session or None. If None is provided, a Session will be created.
     http_session=None,
     # Whether to verify the SSL certificate or not
-    verify_ssl=False,
-    disable_insecure_warning=True
+    verify_ssl=False
 )
 #=> <Powerwall ...>
 ```
 
 > Note: By default the API client does not verify the SSL certificate of the Powerwall. If you want to verify the SSL certificate you can set `verify_ssl` to `True`.
-> The API client suppresses warnings about an inseucre request (because we aren't verifing the certificate). If you want to enable those warnings you can set `disable_insecure_warning` to `False`.
 
 ### Authentication
 
@@ -100,15 +99,15 @@ from tesla_powerwall import User
 
 # Login as customer without email
 # The default value for the email is ""
-powerwall.login("<password>")
+await powerwall.login("<password>")
 #=> <LoginResponse ...>
 
 # Login as customer with email
-powerwall.login("<password>", "<email>")
+await powerwall.login("<password>", "<email>")
 #=> <LoginResponse ...>
 
 # Login with different user
-powerwall.login_as(User.INSTALLER, "<password>", "<email>")
+await powerwall.login_as(User.INSTALLER, "<password>", "<email>")
 #=> <LoginResponse ...>
 
 # Check if we are logged in
@@ -118,7 +117,7 @@ powerwall.is_authenticated()
 #=> True
 
 # Logout
-powerwall.logout()
+await powerwall.logout()
 powerwall.is_authenticated()
 #=> False
 ```
@@ -133,12 +132,12 @@ from tesla_powerwall import API
 # Manually create API object
 api = API('https://<ip>/')
 # Perform get on 'system_status/soe'
-api.get_system_status_soe()
+await api.get_system_status_soe()
 #=> {'percentage': 97.59281925744594}
 
 # From existing powerwall
 api = powerwall.get_api()
-api.get_system_status_soe()
+await api.get_system_status_soe()
 ```
 
 The `Powerwall` objet provides a wrapper around the API and exposes common methods.
@@ -148,14 +147,14 @@ The `Powerwall` objet provides a wrapper around the API and exposes common metho
 Get charge in percent:
 
 ```python
-powerwall.get_charge()
+await powerwall.get_charge()
 #=> 97.59281925744594 (%)
 ```
 
 Get charge in watt:
 
 ```python
-powerwall.get_energy()
+await powerwall.get_energy()
 #=> 14807 (Wh)
 ```
 
@@ -164,7 +163,7 @@ powerwall.get_energy()
 Get the capacity of your powerwall in watt:
 
 ```python
-powerwall.get_capacity()
+await powerwall.get_capacity()
 #=> 28078 (Wh)
 ```
 
@@ -172,8 +171,9 @@ powerwall.get_capacity()
 
 Get information about the battery packs that are installed:
 
+Assuming that the battery is operational, you can retrive a number of values about each battery:
 ```python
-batteries = powerwall.get_batteries()
+batteries = await powerwall.get_batteries()
 #=> [<Battery ...>, <Battery ...>]
 batteries[0].part_number
 #=> "XXX-G"
@@ -189,12 +189,40 @@ batteries[0].energy_discharged
 #=> 4659550 (Wh)
 batteries[0].wobble_detected
 #=> False
+batteries[0].p_out
+#=> 260
+batteries[0].q_out
+#=> -1080
+batteries[0].v_out
+#=> 245.70
+batteries[0].f_out
+#=> 49.953
+batteries[0].i_out
+#=> -7.4
+batteries[0].grid_state
+#=> GridState.COMPLIANT
+batteries[0].disabled_reasons
+#=> []
+
+```
+
+If a battery is disabled it's `grid_state` will be `GridState.DISABLED` and some values will be `None`. The variable `disabled_reasons` might contain more information why the battery is disabled:
+```python
+...
+batteries[1].grid_state
+#=> GridState.DISABLED
+batteries[1].disabled_reasons
+#=> ["DisabledExcessiveVoltageDrop"]
+batteries[1].p_out
+#=> None
+batteries[1].energy_charged
+#=> None
 ```
 
 ### Powerwall Status
 
 ```python
-status = powerwall.get_status()
+status = await powerwall.get_status()
 #=> <PowerwallStatus ...>
 status.version
 #=> '1.49.0'
@@ -209,7 +237,7 @@ status.device_type
 ### Sitemaster
 
 ```python
-sm = powerwall.sitemaster
+sm = await powerwall.get_sitemaster()
 #=> <SiteMaster ...>
 sm.status
 #=> StatusUp
@@ -224,7 +252,7 @@ The sitemaster can be started and stopped using `run()` and `stop()`
 ### Siteinfo
 
 ```python
-info = powerwall.get_site_info()
+info = await powerwall.get_site_info()
 #=> <SiteInfo ...>
 info.site_name
 #=> 'Tesla Home'
@@ -243,7 +271,7 @@ info.timezone
 ```python
 from tesla_powerwall import MeterType
 
-meters = powerwall.get_meters()
+meters = await powerwall.get_meters()
 #=> <MetersAggregates ...>
 
 # access meter, but may return None when meter is not available
@@ -266,7 +294,7 @@ Available meters are: `solar`, `site`, `load`, `battery`, `generator`, and `busw
 `Meter` provides different methods for checking current power supply/draw:
 
 ```python
-meters = powerwall.get_meters()
+meters = await powerwall.get_meters()
 meters.solar.get_power()
 #=> 0.4 (kW)
 meters.solar.instant_power
@@ -305,7 +333,7 @@ meters.battery.get_energy_imported()
 You can receive more detailed information about the meters `site` and `solar`:
 
 ```python
-meter_details = powerwall.get_meter_site() # or get_meter_solar() for the solar meter
+meter_details = await powerwall.get_meter_site() # or get_meter_solar() for the solar meter
 #=> <MeterDetailsResponse ...>
 readings = meter_details.readings
 #=> <MeterDetailsReadings ...>
@@ -327,7 +355,7 @@ As `MeterDetailsReadings` inherits from `MeterResponse` (which is used in `Meter
 ### Device Type
 
 ```python
-powerwall.get_device_type()
+await powerwall.get_device_type()
 #=> <DeviceType.GW1: 'hec'>
 ```
 
@@ -336,39 +364,39 @@ powerwall.get_device_type()
 Get current grid status.
 
 ```python
-powerwall.get_grid_status()
+await powerwall.get_grid_status()
 #=> <GridStatus.Connected: 'SystemGridConnected'>
-powerwall.is_grid_services_active()
+await powerwall.is_grid_services_active()
 #=> False
 ```
 
 ### Operation mode
 
 ```python
-powerwall.get_operation_mode()
+await powerwall.get_operation_mode()
 #=> <OperationMode.SELF_CONSUMPTION: ...>
-powerwall.get_backup_reserve_percentage()
+await powerwall.get_backup_reserve_percentage()
 #=> 5.000019999999999 (%)
 ```
 
 ### Powerwalls Serial Numbers
 
 ```python
-serials = powerwall.get_serial_numbers()
+await serials = powerwall.get_serial_numbers()
 #=> ["...", "...", ...]
 ```
 
 ### Gateway DIN
 
 ```python
-din = powerwall.get_gateway_din()
+await din = powerwall.get_gateway_din()
 #=> 4159645-02-A--TGXXX
 ```
 
 ### VIN
 
 ```python
-vin = powerwall.get_vin()
+await vin = powerwall.get_vin()
 ```
 
 ### Off-grid status (Set Island mode)
@@ -378,16 +406,28 @@ Take your powerwall on- and off-grid similar to the "Take off-grid" button in th
 #### Set powerwall to off-grid (Islanded)
 
 ```python
-powerwall.set_island_mode(IslandMode.OFFGRID)
+await powerwall.set_island_mode(IslandMode.OFFGRID)
 ```
 
 #### Set powerwall to off-grid (Connected)
 
 ```python
-powerwall.set_island_mode(IslandMode.ONGRID)
+await powerwall.set_island_mode(IslandMode.ONGRID)
 ```
 
 # Development
+
+## pre-commit
+
+This project uses pre-commit to run linters, formatters and type checking. You can easily run those checks locally:
+
+```sh
+# Install the pre-commit hooks
+$ pre-commit install
+pre-commit installed at .git/hooks/pre-commit
+```
+
+Now those checks will be execute on every `git commit`. You can also execute all checks manually with `pre-commit run --all-files`.
 
 ## Building
 
@@ -396,6 +436,9 @@ $ python -m build
 ```
 
 ## Testing
+
+The tests are split in unit and integration tests.
+The unit tests are self-contained and can simply be run locally by executing `tox -e unit`, whereas the integration test, run against a real powerwall.
 
 ### Unit-Tests
 
@@ -407,6 +450,12 @@ $ tox -e unit
 
 ### Integration-Tests
 
+To execute the integration tests you need to first provide some information about your powerwall:
+
 ```sh
+$ export POWERWALL_IP=<ip of your powerwall>
+$ export POWERWALL_PASSWORD=<password for your powerwall>
 $ tox -e integration
 ```
+
+> The integration tests might take your powerwall off grid and bring it back online. Before running the tests, make sure that you know what you are doing!

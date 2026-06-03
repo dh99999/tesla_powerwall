@@ -24,6 +24,7 @@ class GridStatus(Enum):
     ISLANDED = "SystemIslandedActive"
     TRANSITION_TO_GRID = "SystemTransitionToGrid"  # Used in version 1.46.0
     TRANSITION_TO_ISLAND = "SystemTransitionToIsland"
+    WAIT_FOR_USER = "SystemWaitForUser"
 
 
 class IslandMode(Enum):
@@ -32,8 +33,9 @@ class IslandMode(Enum):
 
 
 class GridState(Enum):
+    DISABLED = "Disabled"
     COMPLIANT = "Grid_Compliant"
-    QUALIFINY = "Grid_Qualifying"
+    QUALIFYING = "Grid_Qualifying"
     UNCOMPLIANT = "Grid_Uncompliant"
 
 

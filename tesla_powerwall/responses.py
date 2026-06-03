@@ -3,7 +3,13 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from .const import DEFAULT_KW_ROUND_PERSICION, DeviceType, MeterType, Roles
+from .const import (
+    DEFAULT_KW_ROUND_PERSICION,
+    DeviceType,
+    GridState,
+    MeterType,
+    Roles,
+)
 from .error import MeterNotAvailableError
 from .helpers import convert_to_kw
 
@@ -99,7 +105,7 @@ class MeterDetailsReadings(MeterResponse):
             v_l2n=src.get("v_l2n"),
             v_l3n=src.get("v_l3n"),
             # Populate with the values from the base class
-            **meter_response.__dict__
+            **meter_response.__dict__,
         )
 
 
@@ -266,16 +272,38 @@ class SolarResponse(ResponseBase):
 
 @dataclass
 class BatteryResponse(ResponseBase):
+    """
+    A battery pack as part of the system_status response.
+    """
+
     part_number: str
     serial_number: str
-    energy_charged: int
-    energy_discharged: int
+    wobble_detected: bool
     energy_remaining: int
     capacity: int
-    wobble_detected: bool
+    # Values might be None if this battery is in GridState.DISABLED
+    energy_charged: Optional[int]
+    energy_discharged: Optional[int]
+    p_out: Optional[int]
+    q_out: Optional[int]
+    v_out: Optional[float]
+    f_out: Optional[float]
+    i_out: Optional[float]
+    grid_state: GridState
+    disabled_reasons: List[str]
 
     @staticmethod
     def from_dict(src: dict) -> "BatteryResponse":
+        # Check if the battery is disabled. A battery is considered disabled if:
+        # - there is at least one disabled reason present in the response,
+        # - or the pinv_grid_state is empty
+        disabled_reasons = src["disabled_reasons"]
+        raw_grid_state = src["pinv_grid_state"]
+        grid_state = (
+            GridState.DISABLED
+            if len(disabled_reasons) > 0 or len(raw_grid_state) == 0
+            else GridState(raw_grid_state)
+        )
         return BatteryResponse(
             src,
             part_number=src["PackagePartNumber"],
@@ -285,4 +313,11 @@ class BatteryResponse(ResponseBase):
             energy_remaining=src["nominal_energy_remaining"],
             capacity=src["nominal_full_pack_energy"],
             wobble_detected=src["wobble_detected"],
+            p_out=src["p_out"],
+            q_out=src["q_out"],
+            v_out=src["v_out"],
+            f_out=src["f_out"],
+            i_out=src["i_out"],
+            grid_state=grid_state,
+            disabled_reasons=disabled_reasons,
         )
